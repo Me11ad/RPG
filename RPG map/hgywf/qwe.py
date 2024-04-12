@@ -1,9 +1,27 @@
 import random
 
 class Character:
-    def __init__(self, name, symbol):
+    def __init__(self, cell, name, symbol):
         self.name = name
-        self.symbol = symbol        
+        self.symbol = symbol 
+        self.cell = cell
+
+    def move(self, movement):
+        x, y = self.pos
+        game_map = self.cell.gamemap
+        
+        if movement == 'up':
+            if game_map.is_valid_move(x,y-1):
+                game_map.move_character(self, (x,y-1))
+        if movement == 'down':
+            if game_map.is_valid_move(x, y+1):
+                game_map.move_character(self, (x,y+1))
+        elif movement == 'left':
+            if game_map.is_valid_move(x-1, y):
+                game_map.move_character(self, (x-1,y))
+        elif movement == 'right':
+            if game_map.is_valid_move(x+1, y):
+                game_map.move_character(self, (x+1,y))      
     
 
 class Item:
@@ -12,25 +30,15 @@ class Item:
         self.symbol = symbol
 
 class Cell:
-    def __init__(self, has_wall=False):
+    def __init__(self, pos, map, has_wall=False):
         self.character = None
         self.item = None
         self.has_wall = has_wall
+        self.pos = pos
+        self.gamemap = map
+    
 
-    def move(hero, movement):
-        x, y = hero.pos
-        if movement == 'up':
-            if y > 0 and GameMap[y-1][x] == '.':
-                hero.move(x, y - 1)
-        if movement == 'down':
-            if y > 0 and Cell[y-1][x] == '.':
-                hero.move(x, y + 1)
-        elif movement == 'left':
-            if x >= 0 and level_map[y-1][x] == '.':
-                hero.move(y, x - 1)
-        elif movement == 'right':
-            if x >= 0 and level_map[y-1][x] == '.':
-                hero.move(y, x + 1)
+    
 
 
 class GameMap:
@@ -46,6 +54,17 @@ class GameMap:
 
     def is_valid_move(self, x, y):
         return 0 <= x < self.size and 0 <= y < self.size and not self.map[y][x].has_wall
+    
+    def get_cell_at(self, x, y):
+        return self.map[y][x]
+    
+    def move_character(self, character, new_pos):
+        new_x, new_y = new_pos
+        self.map[new_y][new_x].character = character
+        character.cell.character = None
+        character.cell = self.map[new_y][new_x]
+
+                
 
     # def move_character(self, character, new_x, new_y):
     #     current_cell = self.map[new_y][new_x]
@@ -73,13 +92,14 @@ class GameMap:
                 else:
                     print('.', end=' ')
             print()  # Перенос строки для новой строки карты
+            
 
 
 
 
 # Создание персонажей
-hero = Character("Hero", "H")
-monster = Character("Monster", "M")
+self = Character(10, "Hero", "H", 5)
+monster = Character(4,"Monster", "M", 7)
 
 # Создание предметов
 sword = Item("Sword", "S")
@@ -89,7 +109,7 @@ potion = Item("Potion", "P")
 game_map = GameMap(10)
 
 # Размещение персонажей и предметов на карте
-game_map.place_character(hero, 5, 5)
+# game_map.place_character(hero, 5, 5)
 game_map.place_character(monster, 4, 4)
 game_map.place_item(sword, 1, 3)
 game_map.place_item(potion, 3, 1)
@@ -102,5 +122,5 @@ game_map.map[1][1].has_wall = True
 game_map.map[3][3].has_wall = True
 
 # Изменения в коде для передвижения персонажей с учётом стен
-right = game_map.move_character(hero, +0, +1)  # Перемещение героя вправо
-game_map.move_character(monster, 4, 3)  # Перемещение монстра вниз
+# game_map.move_character(hero, 0, 1)  # Перемещение героя вправо
+# game_map.move_character(monster, 4, 3)  # Перемещение монстра вниз
