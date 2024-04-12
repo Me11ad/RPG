@@ -1,8 +1,11 @@
 import random
+
 class Character:
     def __init__(self, name, symbol):
         self.name = name
-        self.symbol = symbol
+        self.symbol = symbol        
+    
+
 class Item:
     def __init__(self, name, symbol):
         self.name = name
@@ -13,6 +16,21 @@ class Cell:
         self.character = None
         self.item = None
         self.has_wall = has_wall
+
+    def move(hero, movement):
+        x, y = hero.pos
+        if movement == 'up':
+            if y > 0 and GameMap[y-1][x] == '.':
+                hero.move(x, y - 1)
+        if movement == 'down':
+            if y > 0 and Cell[y-1][x] == '.':
+                hero.move(x, y + 1)
+        elif movement == 'left':
+            if x >= 0 and level_map[y-1][x] == '.':
+                hero.move(y, x - 1)
+        elif movement == 'right':
+            if x >= 0 and level_map[y-1][x] == '.':
+                hero.move(y, x + 1)
 
 
 class GameMap:
@@ -29,19 +47,19 @@ class GameMap:
     def is_valid_move(self, x, y):
         return 0 <= x < self.size and 0 <= y < self.size and not self.map[y][x].has_wall
 
-    def move_character(self, character, new_x, new_y):
-        current_cell = self.map[new_y][new_x]
-        if self.is_valid_move(new_x, new_y) and not current_cell.character:
-            old_x, old_y = self.find_character(character)
-            self.map[old_y][old_x].character = None
-            self.map[new_y][new_x].character = character
+    # def move_character(self, character, new_x, new_y):
+    #     current_cell = self.map[new_y][new_x]
+    #     if self.is_valid_move(new_x, new_y) and not current_cell.character:
+    #         old_x, old_y = self.find_character(character)
+    #         self.map[old_y][old_x].character = None
+    #         self.map[new_y][new_x].character = character
 
-    def find_character(self, character):
-        for y, row in enumerate(self.map):
-            for x, cell in enumerate(row):
-                if cell.character == character:
-                    return x, y
-        return None, None
+    # def find_character(self, character):
+    #     for y, row in enumerate(self.map):
+    #         for x, cell in enumerate(row):
+    #             if cell.character == character:
+    #                 return x, y
+    #     return None, None
 
     def print_map(self):
         for row in self.map:
@@ -53,7 +71,7 @@ class GameMap:
                 elif cell.has_wall:
                     print('#', end=' ')  # Символ стены
                 else:
-                    print('-', end=' ')
+                    print('.', end=' ')
             print()  # Перенос строки для новой строки карты
 
 
@@ -68,10 +86,10 @@ sword = Item("Sword", "S")
 potion = Item("Potion", "P")
 
 # Создание игровой карты
-game_map = GameMap(5)
+game_map = GameMap(10)
 
 # Размещение персонажей и предметов на карте
-game_map.place_character(hero, 2, 2)
+game_map.place_character(hero, 5, 5)
 game_map.place_character(monster, 4, 4)
 game_map.place_item(sword, 1, 3)
 game_map.place_item(potion, 3, 1)
@@ -84,5 +102,5 @@ game_map.map[1][1].has_wall = True
 game_map.map[3][3].has_wall = True
 
 # Изменения в коде для передвижения персонажей с учётом стен
-game_map.move_character(hero, 3, 2)  # Перемещение героя вправо
+right = game_map.move_character(hero, +0, +1)  # Перемещение героя вправо
 game_map.move_character(monster, 4, 3)  # Перемещение монстра вниз
